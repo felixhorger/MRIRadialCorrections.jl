@@ -1,7 +1,9 @@
-name = "MRIGradientCorrections"
+name = "MRIRadialCorrections"
 uuid = "7cf23c51-5b1a-49d4-9594-91c6ec6e3098"
 authors = ["Felix Horger <felix.horger@kcl.ac.uk>"]
 version = "0.1.0"
 
 [deps]
+DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
+MRIConst = "261c5ebf-3ec9-40d5-9fcc-d6819a7ef2d0"

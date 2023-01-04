@@ -6,4 +6,6 @@ version = "0.1.0"
 [deps]
 DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MRIConst = "261c5ebf-3ec9-40d5-9fcc-d6819a7ef2d0"
+MRIRecon = "8e7948fc-6959-4cf2-9d72-a4f58f174d24"

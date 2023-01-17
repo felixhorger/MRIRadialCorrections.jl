@@ -9,6 +9,7 @@ using ImageView
 using FFTW
 using UnicodePlots
 
+# RING --- Not working
 Δ = [1.0 0.5; 0.5 -0.75]
 
 num_columns = 128
@@ -59,4 +60,27 @@ lineplot(abs.(extracted)[:, 1, 1])
 #imshow(permutedims(abs.(ifft!(ifftshift(noisy_kspace, 1), 1)), (1, 3, 2)))
 
 spoke_pairs[1], intersections[1]
+
+
+
+
+
+# Simple method tests
+δk_parallel_from_shift = Vector{Float64}(undef, length(spoke_angles))
+for (j, ϕ) in enumerate(spoke_angles)
+	sine, cosine = sincos(ϕ)
+	δk_parallel_from_shift[j] = (cosine * δk[1, j] + sine * δk[2, j]) ./ (2π / num_columns)
+end
+δk_perpendicular_from_shift = Vector{Float64}(undef, length(spoke_angles))
+δk_only_parallel = copy(δk)
+for (j, ϕ) in enumerate(spoke_angles)
+	sine, cosine = sincos(ϕ)
+	shift = (-sine * δk[1, j] + cosine * δk[2, j])
+	δk_perpendicular_from_shift[j] = shift / (2π / num_columns)
+	δk_only_parallel[1, j] -= -sine * shift
+	δk_only_parallel[2, j] -= cosine * shift
+end
+
+
+
 

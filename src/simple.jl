@@ -41,7 +41,6 @@ function estimate_parallel_shift(a::AbstractVector{<: Number}, b::AbstractVector
 		# Find lower and upper boundary
 		threshold = w * maxi
 		for outer lower = ramp_centre-1:-1:1
-			@show lower, ramp_centre, num_samples
 			indicator[lower] < threshold && break
 		end
 		for outer upper = ramp_centre+1:length(indicator)

@@ -1,5 +1,3 @@
-
-
 """
 	Find parallel shift of radial spokes according to
 
@@ -43,9 +41,10 @@ function estimate_parallel_shift(a::AbstractVector{<: Number}, b::AbstractVector
 		# Find lower and upper boundary
 		threshold = w * maxi
 		for outer lower = ramp_centre-1:-1:1
+			@show lower, ramp_centre, num_samples
 			indicator[lower] < threshold && break
 		end
-		for outer upper = ramp_centre+1:num_samples
+		for outer upper = ramp_centre+1:length(indicator)
 			indicator[upper] < threshold && break
 		end
 		# Remove the border cases (only non-optimal if object fills the whole field of view, but then not significant)
@@ -78,20 +77,34 @@ function estimate_parallel_shift(a::AbstractMatrix{<: Number}, b::AbstractMatrix
 	return δ_parallel
 end
 
+function linreg(X::AbstractMatrix{<: Number}, y::Vector{<: Number}, w::Vector{<: Number}) # TODO put in separate package? Or just get the relevant bits out
+	W = diagm(w.^2)
+	A = X' * W
+	H = A * X
+	if det(H) == 0
+		θ = Vector{Float64}(undef, size(X, 1))
+		fill!(θ, NaN)
+		Δθ = θ
+	else
+		θ = H \ (A * y)
+		Δθ = sqrt.(diag(inv(H)))
+	end
+	return θ, Δθ
+end
 """
 	Fit a model to parallel delays in depenence of the spoke angle (Peters2003).
-	
-
 """
 function fit_parallel_shift(φ::AbstractVector{<: Real}, δ_parallel::AbstractVector{<: Real})
 	M = Matrix{Float64}(undef, length(φ), 3)
+	w = Vector{Float64}(undef, length(φ))
 	for i in axes(M, 1)
 		sine, cosine = sincos(φ[i])
 		M[i, 1] = cosine^2
 		M[i, 2] = sine^2
 		M[i, 3] = cosine * sine
+		w[i] = cos(2*φ[i])^2
 	end
-	return Tuple(M \ δ_parallel)
+	return Tuple(linreg(M, δ_parallel, w)[1]), w #Tuple(M \ δ_parallel)
 end
 # 3D version not functional
 #function fit_parallel_shift(φ::AbstractMatrix{<: Real}, δ::AbstractVector{<: Real})

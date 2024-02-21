@@ -158,8 +158,7 @@ end
 function compute_spoke_shift(
 	φ::AbstractVector{<: Real},
 	Δk::AbstractVector{<: Real},
-	R::AbstractMatrix{<: Real},
-	pattern::Val{:StackOfStars}
+	R::AbstractMatrix{<: Real}
 )
 	e_r = Vector{Float64}(undef, 2)
 	δk = Matrix{Float64}(undef, 3, length(φ))
@@ -174,6 +173,30 @@ function compute_spoke_shift(
 	end
 	return δk
 end
+
+
+function compute_spoke_shift(
+	φ::AbstractVector{<: Real},
+	θ::AbstractVector{<: Real},
+	Δk::AbstractVector{<: Real},
+	R::AbstractMatrix{<: Real}
+)
+	e_r = Vector{Float64}(undef, 3)
+	δk = Matrix{Float64}(undef, 3, length(φ))
+	tmp = Vector{Float64}(undef, 3)
+	for (i, (φ, ϑ)) in enumerate(zip(φ, θ))
+		sineφ, cosineφ = sincos(φ)
+		sineϑ, cosineϑ = sincos(ϑ)
+		e_r[1] = cosineφ * sineϑ
+		e_r[2] =   sineφ * sineϑ
+		e_r[3] = cosineϑ
+		@views mul!(tmp, R, e_r)
+		tmp .*= Δk
+		@views mul!(δk[:, i], R', tmp)
+	end
+	return δk
+end
+
 
 """
 	beware of the units of Δk and k

@@ -1,3 +1,4 @@
+# TODO: for multichannel data, it is actually beneficial to sum all the absolute values of channels?
 """
 	Find parallel shift of radial spokes according to
 
@@ -22,7 +23,7 @@ function estimate_parallel_shift(a::AbstractVector{<: Number}, b::AbstractVector
 	f, g = let
 		# Get magnitude signals
 		ma = abs.(a)
-		mb = reverse(abs.(b)) # Further reverse b along time
+		mb = reverse!(abs.(b)) # Further reverse b along time
 		# Transform into the Fourier domain (of time along readout, not kspace)
 		f, g = rfft.(ifftshift.((ma, mb)))
 	end
@@ -49,7 +50,7 @@ function estimate_parallel_shift(a::AbstractVector{<: Number}, b::AbstractVector
 		# Remove the border cases (only non-optimal if object fills the whole field of view, but then not significant)
 		lower += 1
 		upper -= 1
-		abs(upper - lower) < 0.05num_samples && error("Window is shorter than 5% of the array length")
+		abs(upper - lower) < 0.05 * length(indicator) && error("Window is shorter than 5% of the array length")
 	end
 	# Extract phase ramp
 	@views ϕ = @. angle(f[lower:upper] * conj(g[lower:upper]))

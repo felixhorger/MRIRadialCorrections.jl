@@ -184,13 +184,13 @@ function compute_spoke_shift(
 	e_r = Vector{Float64}(undef, 3)
 	δk = Matrix{Float64}(undef, 3, length(φ))
 	tmp = Vector{Float64}(undef, 3)
-	for (i, (φ, ϑ)) in enumerate(zip(φ, θ))
-		sineφ, cosineφ = sincos(φ)
+	for (i, (ϕ, ϑ)) in enumerate(zip(φ, θ))
+		sineϕ, cosineϕ = sincos(ϕ)
 		sineϑ, cosineϑ = sincos(ϑ)
-		e_r[1] = cosineφ * sineϑ
-		e_r[2] =   sineφ * sineϑ
+		e_r[1] = cosineϕ * sineϑ
+		e_r[2] =   sineϕ * sineϑ
 		e_r[3] = cosineϑ
-		@views mul!(tmp, R, e_r)
+		mul!(tmp, R, e_r)
 		tmp .*= Δk
 		@views mul!(δk[:, i], R', tmp)
 	end
